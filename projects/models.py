@@ -13,10 +13,10 @@ class Project(models.Model):
     )
 
     members = models.ManyToManyField(
-        User,
-        related_name='projects'
-    )
-
+    User,
+    related_name='projects',
+    blank=True
+)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
