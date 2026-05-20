@@ -72,12 +72,22 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'core.wsgi.application'
 
-DATABASES = {
+if os.environ.get('DATABASE_URL'):
 
-    'default': dj_database_url.parse(
-        os.environ.get('DATABASE_URL')
-    )
-}
+    DATABASES = {
+        'default': dj_database_url.parse(
+            os.environ.get('DATABASE_URL')
+        )
+    }
+
+else:
+
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
 
 AUTH_PASSWORD_VALIDATORS = [
     {
