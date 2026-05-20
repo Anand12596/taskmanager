@@ -15,6 +15,8 @@ class ProjectViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
 
-        serializer.save(
+        project = serializer.save(
             created_by=self.request.user
         )
+
+        project.members.add(self.request.user)

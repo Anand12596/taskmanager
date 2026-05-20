@@ -42,14 +42,15 @@ const Dashboard = () => {
 
         try {
 
-            const response = await api.get('projects/');
+            const response = await api.get(
+                'projects/'
+            );
 
             setProjects(response.data);
 
         } catch (error) {
 
             console.log(error);
-
         }
     };
 
@@ -57,14 +58,15 @@ const Dashboard = () => {
 
         try {
 
-            const response = await api.get('tasks/');
+            const response = await api.get(
+                'tasks/'
+            );
 
             setTasks(response.data);
 
         } catch (error) {
 
             console.log(error);
-
         }
     };
 
@@ -92,7 +94,6 @@ const Dashboard = () => {
         } catch (error) {
 
             alert('Project Create Failed');
-
         }
     };
 
@@ -124,7 +125,6 @@ const Dashboard = () => {
         } catch (error) {
 
             alert('Task Create Failed');
-
         }
     };
 
@@ -132,7 +132,9 @@ const Dashboard = () => {
 
         try {
 
-            await api.delete(`projects/${id}/`);
+            await api.delete(
+                `projects/${id}/`
+            );
 
             fetchProjects();
 
@@ -141,7 +143,6 @@ const Dashboard = () => {
         } catch (error) {
 
             alert('Delete Failed');
-
         }
     };
 
@@ -149,7 +150,9 @@ const Dashboard = () => {
 
         try {
 
-            await api.delete(`tasks/${id}/`);
+            await api.delete(
+                `tasks/${id}/`
+            );
 
             fetchTasks();
 
@@ -158,7 +161,6 @@ const Dashboard = () => {
         } catch (error) {
 
             alert('Delete Failed');
-
         }
     };
 
@@ -338,8 +340,90 @@ const Dashboard = () => {
 
                             <p>{project.description}</p>
 
+                            <p>
+                                <strong>
+                                    Team Members:
+                                </strong>{' '}
+                                {project.members_count}
+                            </p>
+
                             <button
-                                className="btn btn-danger"
+                                className="btn btn-secondary me-2 mb-2"
+                                onClick={async () => {
+
+                                    const userId = prompt(
+                                        'Enter User ID to add'
+                                    );
+
+                                    if (!userId) return;
+
+                                    try {
+
+                                        await api.patch(
+
+                                            `projects/${project.id}/`,
+
+                                            {
+                                                member_ids: [
+                                                    Number(userId)
+                                                ]
+                                            }
+                                        );
+
+                                        fetchProjects();
+
+                                        alert('Member Added');
+
+                                    } catch (error) {
+
+                                        alert('Add Failed');
+                                    }
+                                }}
+                            >
+                                Add Member
+                            </button>
+
+                            <button
+                                className="btn btn-warning me-2 mb-2"
+                                onClick={async () => {
+
+                                    const newTitle = prompt(
+                                        'Enter new project title',
+                                        project.title
+                                    );
+
+                                    if (!newTitle) return;
+
+                                    try {
+
+                                        await api.patch(
+
+                                            `projects/${project.id}/`,
+
+                                            {
+                                                title: newTitle,
+                                            }
+                                        );
+
+                                        fetchProjects();
+
+                                        alert(
+                                            'Project Updated'
+                                        );
+
+                                    } catch (error) {
+
+                                        alert(
+                                            'Update Failed'
+                                        );
+                                    }
+                                }}
+                            >
+                                Edit
+                            </button>
+
+                            <button
+                                className="btn btn-danger mb-2"
                                 onClick={() =>
                                     deleteProject(project.id)
                                 }
@@ -378,6 +462,92 @@ const Dashboard = () => {
                                 <strong>Status:</strong>{' '}
                                 {task.status}
                             </p>
+
+                            <select
+                                className="form-control mb-3"
+                                value={task.status}
+                                onChange={async (e) => {
+
+                                    try {
+
+                                        await api.patch(
+
+                                            `tasks/${task.id}/`,
+
+                                            {
+                                                status:
+                                                    e.target.value,
+                                            }
+                                        );
+
+                                        fetchTasks();
+
+                                        alert(
+                                            'Task Updated'
+                                        );
+
+                                    } catch (error) {
+
+                                        alert(
+                                            'Update Failed'
+                                        );
+                                    }
+                                }}
+                            >
+
+                                <option value="TODO">
+                                    Todo
+                                </option>
+
+                                <option value="IN_PROGRESS">
+                                    In Progress
+                                </option>
+
+                                <option value="DONE">
+                                    Done
+                                </option>
+
+                            </select>
+
+                            <button
+                                className="btn btn-warning me-2"
+                                onClick={async () => {
+
+                                    const newTitle = prompt(
+                                        'Enter new task title',
+                                        task.title
+                                    );
+
+                                    if (!newTitle) return;
+
+                                    try {
+
+                                        await api.patch(
+
+                                            `tasks/${task.id}/`,
+
+                                            {
+                                                title: newTitle,
+                                            }
+                                        );
+
+                                        fetchTasks();
+
+                                        alert(
+                                            'Task Updated'
+                                        );
+
+                                    } catch (error) {
+
+                                        alert(
+                                            'Update Failed'
+                                        );
+                                    }
+                                }}
+                            >
+                                Edit
+                            </button>
+                            <br/>
 
                             <button
                                 className="btn btn-danger"
