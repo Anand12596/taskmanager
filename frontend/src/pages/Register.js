@@ -2,10 +2,7 @@ import { useState } from 'react';
 
 import API from '../services/api';
 
-import {
-    useNavigate,
-    Link
-} from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
 
 function Register() {
@@ -46,9 +43,7 @@ function Register() {
                 formData
             );
 
-            alert(
-                'Registration Successful'
-            );
+            alert('Registration Successful');
 
             navigate('/');
 
@@ -56,14 +51,13 @@ function Register() {
 
             console.log(error);
 
-            console.log(error.response);
-
             alert(
 
-                JSON.stringify(
+                error.response?.data?.detail ||
 
-                    error.response.data
-                )
+                JSON.stringify(error.response?.data) ||
+
+                'Registration Failed'
             );
         }
     };
@@ -79,9 +73,7 @@ function Register() {
                     <div className="card p-4 shadow">
 
                         <h2 className="text-center mb-4">
-
                             Register
-
                         </h2>
 
                         <form onSubmit={handleSubmit}>
@@ -92,6 +84,7 @@ function Register() {
                                 placeholder="Username"
                                 className="form-control mb-3"
                                 onChange={handleChange}
+                                required
                             />
 
                             <input
@@ -100,6 +93,7 @@ function Register() {
                                 placeholder="Email"
                                 className="form-control mb-3"
                                 onChange={handleChange}
+                                required
                             />
 
                             <input
@@ -108,24 +102,22 @@ function Register() {
                                 placeholder="Password"
                                 className="form-control mb-3"
                                 onChange={handleChange}
+                                required
                             />
 
                             <select
                                 name="role"
                                 className="form-control mb-3"
                                 onChange={handleChange}
+                                value={formData.role}
                             >
 
                                 <option value="MEMBER">
-
                                     Member
-
                                 </option>
 
                                 <option value="ADMIN">
-
                                     Admin
-
                                 </option>
 
                             </select>
@@ -134,9 +126,7 @@ function Register() {
                                 type="submit"
                                 className="btn btn-success w-100"
                             >
-
                                 Register
-
                             </button>
 
                         </form>
@@ -146,9 +136,7 @@ function Register() {
                             Already have an account?
 
                             <Link to="/">
-
                                 Login
-
                             </Link>
 
                         </p>
