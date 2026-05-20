@@ -12,9 +12,3 @@ class TaskViewSet(viewsets.ModelViewSet):
     serializer_class = TaskSerializer
 
     permission_classes = [IsAuthenticated]
-
-    def perform_create(self, serializer):
-
-        serializer.save(
-            assigned_to=self.request.user
-        )

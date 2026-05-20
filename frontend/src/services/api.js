@@ -13,19 +13,7 @@ API.interceptors.request.use(
             'access'
         );
 
-        // Don't send token for register/login
-        if (
-
-            token &&
-
-            !config.url.includes(
-                'register'
-            ) &&
-
-            !config.url.includes(
-                'login'
-            )
-        ) {
+        if (token) {
 
             config.headers.Authorization =
                 `Bearer ${token}`;

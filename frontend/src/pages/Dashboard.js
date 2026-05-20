@@ -18,26 +18,6 @@ const Dashboard = () => {
 
     const [selectedProject, setSelectedProject] = useState('');
 
-    const todoTasks = tasks.filter(
-        (task) => task.status === 'TODO'
-    );
-
-    const inProgressTasks = tasks.filter(
-        (task) => task.status === 'IN_PROGRESS'
-    );
-
-    const doneTasks = tasks.filter(
-        (task) => task.status === 'DONE'
-    );
-
-    useEffect(() => {
-
-        fetchProjects();
-
-        fetchTasks();
-
-    }, []);
-
     const fetchProjects = async () => {
 
         try {
@@ -70,18 +50,29 @@ const Dashboard = () => {
         }
     };
 
+    useEffect(() => {
+
+        fetchProjects();
+
+        fetchTasks();
+
+    }, []);
+
     const createProject = async (e) => {
 
         e.preventDefault();
 
         try {
 
-            await api.post('projects/', {
+            await api.post(
+                'projects/',
+                {
+                    title: projectTitle,
+                    description: projectDescription,
+                }
+            );
 
-                title: projectTitle,
-
-                description: projectDescription,
-            });
+            alert('Project Created');
 
             setProjectTitle('');
 
@@ -89,9 +80,9 @@ const Dashboard = () => {
 
             fetchProjects();
 
-            alert('Project Created');
-
         } catch (error) {
+
+            console.log(error);
 
             alert('Project Create Failed');
         }
@@ -103,14 +94,16 @@ const Dashboard = () => {
 
         try {
 
-            await api.post('tasks/', {
+            await api.post(
+                'tasks/',
+                {
+                    title: taskTitle,
+                    description: taskDescription,
+                    project: selectedProject,
+                }
+            );
 
-                title: taskTitle,
-
-                description: taskDescription,
-
-                project: selectedProject,
-            });
+            alert('Task Created');
 
             setTaskTitle('');
 
@@ -120,9 +113,9 @@ const Dashboard = () => {
 
             fetchTasks();
 
-            alert('Task Created');
-
         } catch (error) {
+
+            console.log(error);
 
             alert('Task Create Failed');
         }
@@ -136,11 +129,13 @@ const Dashboard = () => {
                 `projects/${id}/`
             );
 
-            fetchProjects();
-
             alert('Project Deleted');
 
+            fetchProjects();
+
         } catch (error) {
+
+            console.log(error);
 
             alert('Delete Failed');
         }
@@ -154,21 +149,37 @@ const Dashboard = () => {
                 `tasks/${id}/`
             );
 
-            fetchTasks();
-
             alert('Task Deleted');
 
+            fetchTasks();
+
         } catch (error) {
+
+            console.log(error);
 
             alert('Delete Failed');
         }
     };
 
+    const totalTasks = tasks.length;
+
+    const todoTasks = tasks.filter(
+        (task) => task.status === 'TODO'
+    ).length;
+
+    const inProgressTasks = tasks.filter(
+        (task) => task.status === 'IN_PROGRESS'
+    ).length;
+
+    const doneTasks = tasks.filter(
+        (task) => task.status === 'DONE'
+    ).length;
+
     return (
 
         <div className="container mt-5">
 
-            <h1 className="mb-4">
+            <h1 className="mb-5">
                 Dashboard
             </h1>
 
@@ -176,11 +187,11 @@ const Dashboard = () => {
 
                 <div className="col-md-3">
 
-                    <div className="card shadow p-4">
+                    <div className="card p-4 shadow">
 
                         <h3>Total Tasks</h3>
 
-                        <h1>{tasks.length}</h1>
+                        <h1>{totalTasks}</h1>
 
                     </div>
 
@@ -188,11 +199,11 @@ const Dashboard = () => {
 
                 <div className="col-md-3">
 
-                    <div className="card shadow p-4">
+                    <div className="card p-4 shadow">
 
                         <h3>Todo</h3>
 
-                        <h1>{todoTasks.length}</h1>
+                        <h1>{todoTasks}</h1>
 
                     </div>
 
@@ -200,11 +211,11 @@ const Dashboard = () => {
 
                 <div className="col-md-3">
 
-                    <div className="card shadow p-4">
+                    <div className="card p-4 shadow">
 
                         <h3>In Progress</h3>
 
-                        <h1>{inProgressTasks.length}</h1>
+                        <h1>{inProgressTasks}</h1>
 
                     </div>
 
@@ -212,11 +223,11 @@ const Dashboard = () => {
 
                 <div className="col-md-3">
 
-                    <div className="card shadow p-4">
+                    <div className="card p-4 shadow">
 
                         <h3>Done</h3>
 
-                        <h1>{doneTasks.length}</h1>
+                        <h1>{doneTasks}</h1>
 
                     </div>
 
@@ -224,7 +235,7 @@ const Dashboard = () => {
 
             </div>
 
-            <div className="card shadow p-4 mb-5">
+            <div className="card p-4 shadow mb-5">
 
                 <h2>Create Project</h2>
 
@@ -260,7 +271,7 @@ const Dashboard = () => {
 
             </div>
 
-            <div className="card shadow p-4 mb-5">
+            <div className="card p-4 shadow mb-5">
 
                 <h2>Create Task</h2>
 
@@ -321,9 +332,9 @@ const Dashboard = () => {
 
             </div>
 
-            <h2 className="mb-4">
+            <h1 className="mb-4">
                 Projects
-            </h2>
+            </h1>
 
             <div className="row">
 
@@ -334,47 +345,46 @@ const Dashboard = () => {
                         key={project.id}
                     >
 
-                        <div className="card shadow p-4">
+                        <div className="card p-4 shadow">
 
-                            <h3>{project.title}</h3>
+                            <h2>{project.title}</h2>
 
                             <p>{project.description}</p>
 
-                            <p>
-                                <strong>
-                                    Team Members:
-                                </strong>{' '}
-                                {project.members_count}
-                            </p>
+                            <h4>
+                                Team Members:
+                                {' '}
+                                {project.members?.length || 0}
+                            </h4>
 
                             <button
-                                className="btn btn-secondary me-2 mb-2"
+                                className="btn btn-secondary mb-3"
                                 onClick={async () => {
 
-                                    const userId = prompt(
-                                        'Enter User ID to add'
+                                    const memberId = prompt(
+                                        'Enter User ID'
                                     );
-
-                                    if (!userId) return;
 
                                     try {
 
                                         await api.patch(
-
                                             `projects/${project.id}/`,
-
                                             {
                                                 member_ids: [
-                                                    Number(userId)
+                                                    Number(memberId)
                                                 ]
                                             }
                                         );
 
+                                        alert(
+                                            'Member Added'
+                                        );
+
                                         fetchProjects();
 
-                                        alert('Member Added');
-
                                     } catch (error) {
+
+                                        console.log(error);
 
                                         alert('Add Failed');
                                     }
@@ -384,37 +394,37 @@ const Dashboard = () => {
                             </button>
 
                             <button
-                                className="btn btn-warning me-2 mb-2"
+                                className="btn btn-warning mb-3"
                                 onClick={async () => {
 
                                     const newTitle = prompt(
-                                        'Enter new project title',
+                                        'Enter New Project Title',
                                         project.title
                                     );
-
-                                    if (!newTitle) return;
 
                                     try {
 
                                         await api.patch(
-
                                             `projects/${project.id}/`,
-
                                             {
-                                                title: newTitle,
+                                                title: newTitle
                                             }
                                         );
-
-                                        fetchProjects();
 
                                         alert(
                                             'Project Updated'
                                         );
 
+                                        fetchProjects();
+
                                     } catch (error) {
 
+                                        console.log(error);
+
                                         alert(
-                                            'Update Failed'
+                                            JSON.stringify(
+                                                error.response.data
+                                            )
                                         );
                                     }
                                 }}
@@ -423,7 +433,7 @@ const Dashboard = () => {
                             </button>
 
                             <button
-                                className="btn btn-danger mb-2"
+                                className="btn btn-danger"
                                 onClick={() =>
                                     deleteProject(project.id)
                                 }
@@ -439,9 +449,9 @@ const Dashboard = () => {
 
             </div>
 
-            <h2 className="mb-4 mt-5">
+            <h1 className="mb-4 mt-5">
                 Tasks
-            </h2>
+            </h1>
 
             <div className="row">
 
@@ -449,19 +459,20 @@ const Dashboard = () => {
 
                     <div
                         className="col-md-4 mb-4"
-                        key={task.id}
+                        key={task.id || task._id}
                     >
 
-                        <div className="card shadow p-4">
+                        <div className="card p-4 shadow">
 
-                            <h3>{task.title}</h3>
+                            <h2>{task.title}</h2>
 
                             <p>{task.description}</p>
 
-                            <p>
-                                <strong>Status:</strong>{' '}
+                            <h4>
+                                Status:
+                                {' '}
                                 {task.status}
-                            </p>
+                            </h4>
 
                             <select
                                 className="form-control mb-3"
@@ -471,25 +482,23 @@ const Dashboard = () => {
                                     try {
 
                                         await api.patch(
-
-                                            `tasks/${task.id}/`,
-
+                                            `tasks/${task.id || task._id}/`,
                                             {
                                                 status:
-                                                    e.target.value,
+                                                    e.target.value
                                             }
                                         );
 
                                         fetchTasks();
 
-                                        alert(
-                                            'Task Updated'
-                                        );
-
                                     } catch (error) {
 
+                                        console.log(error);
+
                                         alert(
-                                            'Update Failed'
+                                            JSON.stringify(
+                                                error.response.data
+                                            )
                                         );
                                     }
                                 }}
@@ -510,49 +519,50 @@ const Dashboard = () => {
                             </select>
 
                             <button
-                                className="btn btn-warning me-2"
+                                className="btn btn-warning mb-3"
                                 onClick={async () => {
 
                                     const newTitle = prompt(
-                                        'Enter new task title',
+                                        'Enter New Task Title',
                                         task.title
                                     );
-
-                                    if (!newTitle) return;
 
                                     try {
 
                                         await api.patch(
-
-                                            `tasks/${task.id}/`,
-
+                                            `tasks/${task.id || task._id}/`,
                                             {
-                                                title: newTitle,
+                                                title: newTitle
                                             }
                                         );
-
-                                        fetchTasks();
 
                                         alert(
                                             'Task Updated'
                                         );
 
+                                        fetchTasks();
+
                                     } catch (error) {
 
+                                        console.log(error);
+
                                         alert(
-                                            'Update Failed'
+                                            JSON.stringify(
+                                                error.response.data
+                                            )
                                         );
                                     }
                                 }}
                             >
                                 Edit
                             </button>
-                            <br/>
 
                             <button
                                 className="btn btn-danger"
                                 onClick={() =>
-                                    deleteTask(task.id)
+                                    deleteTask(
+                                        task.id || task._id
+                                    )
                                 }
                             >
                                 Delete
