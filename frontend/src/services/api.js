@@ -2,18 +2,31 @@ import axios from 'axios';
 
 const API = axios.create({
 
-    baseURL: 'http://127.0.0.1:8000/api/',
+    baseURL:
+        'https://taskmanager-cbgy.onrender.com/api/',
 });
 
 API.interceptors.request.use(
 
     (config) => {
 
-        const token = localStorage.getItem(
-            'access'
-        );
+        const token =
+            localStorage.getItem(
+                'access'
+            );
 
-        if (token) {
+        if (
+
+            token &&
+
+            !config.url.includes(
+                'register'
+            ) &&
+
+            !config.url.includes(
+                'login'
+            )
+        ) {
 
             config.headers.Authorization =
                 `Bearer ${token}`;
